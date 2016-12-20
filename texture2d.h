@@ -15,6 +15,8 @@ public:
 
     bool Load();
     virtual bool RendererAllocate();
+    u32 GetWidth();
+    u32 GetHeight();
 
 protected:
     void* _memory;

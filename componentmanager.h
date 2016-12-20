@@ -1,7 +1,7 @@
 #ifndef COMPONENTMANAGER_H
 #define COMPONENTMANAGER_H
 
-#define MAX_ENTITIES 1000
+#define MAX_ENTITIES 100
 
 #include <array>
 #include "components.h"

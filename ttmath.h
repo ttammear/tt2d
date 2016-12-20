@@ -2,6 +2,7 @@
 #define TTMATH_H
 
 #include "shared.h"
+#include <math.h>
 
 struct Vec2
 {
@@ -12,6 +13,8 @@ struct Vec2
     Vec2(r32 x, r32 y);
 
     static Vec2 Zero();
+    Vec2 operator + (Vec2 const & in);
+    Vec2 operator * (Vec2 const & in);
 };
 
 typedef struct Mat4
@@ -34,13 +37,14 @@ typedef struct Mat4
                 float m12, m22, m32, m42;
                 float m13, m23, m33, m43;
                 float m14, m24, m34, m44;
-                /*
-                float m11, m12, m13, m14;
-                float m21, m22, m23, m24;
-                float m31, m32, m33, m34;
-                float m41, m42, m43, m44;*/
            };
     };
+    Mat4 operator * (Mat4 const & in);
 } Mat4;
+
+Mat4 scale(Vec2 scale);
+Mat4 translate(Vec2 scale);
+Mat4 rotate(r32 rot);
+Mat4 ortho(r32 left, r32 right, r32 bottom, r32 top);
 
 #endif // TTMATH_H

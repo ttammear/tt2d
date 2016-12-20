@@ -31,3 +31,13 @@ bool Texture2D::RendererAllocate()
 {
 
 }
+
+u32 Texture2D::GetWidth()
+{
+    return _width;
+}
+
+u32 Texture2D::GetHeight()
+{
+    return _height;
+}
