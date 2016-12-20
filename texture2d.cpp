@@ -29,7 +29,7 @@ bool Texture2D::Load()
 
 bool Texture2D::RendererAllocate()
 {
-
+    return true;
 }
 
 u32 Texture2D::GetWidth()

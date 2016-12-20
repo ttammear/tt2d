@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     opengltexture2d.cpp \
     componentmanager.cpp \
     spriterendersystem.cpp \
-    system.cpp
+    system.cpp \
+    transformsystem.cpp
 
 HEADERS += \
     platform.h \
@@ -28,7 +29,8 @@ HEADERS += \
     opengltexture2d.h \
     componentmanager.h \
     spriterendersystem.h \
-    system.h
+    system.h \
+    transformsystem.h
 
 LIBS += \
     -lGL \
