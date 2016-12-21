@@ -107,13 +107,22 @@ bool LinuxPlatform::CreateWindow(u32 width, u32 height, std::__cxx11::string tit
         printf("GL 4.4 NOT Supported, exiting!\n");
         return false;
     }
+    printf("window create\n");
+    glEnable (GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_FRAMEBUFFER_SRGB);
+
+    glEnable (GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+
+    // TODO: this doesnt belong here
+    _engine.Init();
+
     return Platform::CreateWindow(width, height, title);
 }
 
 void LinuxPlatform::Run()
 {
-    glEnable(GL_FRAMEBUFFER_SRGB);
-
     XEvent event;
     b32 running = true;
     struct timespec start;
@@ -165,9 +174,11 @@ void LinuxPlatform::Run()
                 {
                     XConfigureEvent xce = event.xconfigure;
                     // TODO: this event might not always be a resize event?
-                    /*width = */xce.width;
-                    /*height = */xce.height;
+                    ///*width = */xce.width;
+                    ///*height = */xce.height;
                     //reshape(eMem,xce.width,xce.height);
+                    glViewport  ( 0,0,xce.width,xce.height);
+
                 }
                 break;
             }

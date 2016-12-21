@@ -30,6 +30,12 @@ Vec2 Vec2::operator * (Vec2 const & in)
     return ret;
 }
 
+IVec2::IVec2(i32 x, i32 y)
+{
+    this->x = x;
+    this->y = y;
+}
+
 Mat4 Mat4::operator * (Mat4 const & in)
 {
     Mat4 ret;

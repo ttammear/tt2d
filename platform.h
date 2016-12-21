@@ -18,7 +18,7 @@ public:
     virtual void Run();
     void Update(r32 dt);
 
-private:
+protected:
     Engine _engine;
 
     /*virtual bool OpenFile(string name);

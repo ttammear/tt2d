@@ -2,13 +2,12 @@
 #define SPRITERENDERSYSTEM_H
 
 #include "componentmanager.h"
-#include "system.h"
 #include <GL/glew.h>
 #include "opengltexture2d.h"
 #include "renderer.h"
 #include "ttmath.h"
 
-class SpriteRenderSystem : System
+class SpriteRenderSystem
 {
 public:
     SpriteRenderSystem();

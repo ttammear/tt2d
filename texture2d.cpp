@@ -18,12 +18,14 @@ Texture2D::~Texture2D()
 
 bool Texture2D::Load()
 {
-    _memory = stbi_load(_path.c_str(), &_width, &_height, &_numComponents, 0);
+    _memory = stbi_load(_path.c_str(), &_width, &_height, &_numComponents, 4);
+    printf("components: %d\n",_numComponents);
     if(_memory != nullptr)
     {
         _isAllocate = true;
         return true;
     }
+    assert(false);
     return false;
 }
 

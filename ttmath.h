@@ -17,6 +17,15 @@ struct Vec2
     Vec2 operator * (Vec2 const & in);
 };
 
+struct IVec2
+{
+    i32 x;
+    i32 y;
+
+    IVec2() = default;
+    IVec2(i32 x, i32 y);
+};
+
 typedef struct Mat4
 {
     union

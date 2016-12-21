@@ -13,8 +13,8 @@ SOURCES += main.cpp \
     opengltexture2d.cpp \
     componentmanager.cpp \
     spriterendersystem.cpp \
-    system.cpp \
-    transformsystem.cpp
+    transformsystem.cpp \
+    textrendersystem.cpp
 
 HEADERS += \
     platform.h \
@@ -29,10 +29,14 @@ HEADERS += \
     opengltexture2d.h \
     componentmanager.h \
     spriterendersystem.h \
-    system.h \
-    transformsystem.h
+    transformsystem.h \
+    textrendersystem.h
 
 LIBS += \
     -lGL \
     -lX11 \
-    -lGLEW
+    -lGLEW \
+    -lfreetype
+
+INCLUDEPATH += \
+    /usr/include/freetype2

@@ -16,8 +16,10 @@ Mat4 getMatrix2(Vec2 posv, Vec2 scalev, r32 rot)
     return transM*rotM*scaleM;
 }
 
-Vec2 anchorOffset2(RectPivot parentPivot, RectPivot anchorPivot)
+Vec2 anchorOffset2(RectPivot parentPivot, RectPivot anchorPivot, Vec2 size)
 {
+    Vec2 ret;
+
     switch(parentPivot)
     {
         case RECTPIVOT_CENTER:
@@ -25,17 +27,23 @@ Vec2 anchorOffset2(RectPivot parentPivot, RectPivot anchorPivot)
             switch(anchorPivot)
             {
                 case RECTPIVOT_TOPLEFT:
-                    return Vec2(-0.5, 0.5);
+                    ret = Vec2(-0.5, 0.5);
+                    goto end;
                 case RECTPIVOT_TOPRIGHT:
-                    return Vec2(0.5, 0.5);
+                    ret = Vec2(0.5, 0.5);
+                    goto end;
                 case RECTPIVOT_BOTTOMLEFT:
-                    return Vec2(-0.5, -0.5);
+                    ret = Vec2(-0.5, -0.5);
+                    goto end;
                 case RECTPIVOT_BOTTOMRIGHT:
-                    return Vec2(0.5, -0.5);
+                    ret = Vec2(0.5, -0.5);
+                    goto end;
                 case RECTPIVOT_CENTER:
-                    return Vec2::Zero();
+                    ret = Vec2::Zero();
+                    goto end;
                 default:
-                    return Vec2::Zero();
+                    ret = Vec2::Zero();
+                    goto end;
             }
         } break;
         case RECTPIVOT_TOPLEFT:
@@ -43,17 +51,23 @@ Vec2 anchorOffset2(RectPivot parentPivot, RectPivot anchorPivot)
             switch(anchorPivot)
             {
                 case RECTPIVOT_TOPLEFT:
-                    return Vec2(0.0f, 0.0f);
+                    ret = Vec2(0.0f, 0.0f);
+                    goto end;
                 case RECTPIVOT_TOPRIGHT:
-                    return Vec2(1.0f, 0.0f);
+                    ret = Vec2(1.0f, 0.0f);
+                    goto end;
                 case RECTPIVOT_BOTTOMLEFT:
-                    return Vec2(0.0f, -1.0f);
+                    ret = Vec2(0.0f, -1.0f);
+                    goto end;
                 case RECTPIVOT_BOTTOMRIGHT:
-                    return Vec2(1.0f, -1.0f);
+                    ret = Vec2(1.0f, -1.0f);
+                    goto end;
                 case RECTPIVOT_CENTER:
-                    return Vec2(0.5f, -0.5f);
+                    ret = Vec2(0.5f, -0.5f);
+                    goto end;
                 default:
-                    return Vec2::Zero();
+                    ret = Vec2::Zero();
+                    goto end;
             }
         } break;
         case RECTPIVOT_TOPRIGHT:
@@ -61,17 +75,23 @@ Vec2 anchorOffset2(RectPivot parentPivot, RectPivot anchorPivot)
             switch(anchorPivot)
             {
                 case RECTPIVOT_TOPLEFT:
-                    return Vec2(-1.0f, 0.0f);
+                    ret = Vec2(-1.0f, 0.0f);
+                    goto end;
                 case RECTPIVOT_TOPRIGHT:
-                    return Vec2(0.0f, 0.0f);
+                    ret = Vec2(0.0f, 0.0f);
+                    goto end;
                 case RECTPIVOT_BOTTOMLEFT:
-                    return Vec2(-1.0f, -1.0f);
+                    ret = Vec2(-1.0f, -1.0f);
+                    goto end;
                 case RECTPIVOT_BOTTOMRIGHT:
-                    return Vec2(0.0f, -1.0f);
+                    ret = Vec2(0.0f, -1.0f);
+                    goto end;
                 case RECTPIVOT_CENTER:
-                    return Vec2(-0.5f, -0.5f);
+                    ret = Vec2(-0.5f, -0.5f);
+                    goto end;
                 default:
-                    return Vec2::Zero();
+                    ret = Vec2::Zero();
+                    goto end;
             }
         } break;
         case RECTPIVOT_BOTTOMLEFT:
@@ -79,17 +99,23 @@ Vec2 anchorOffset2(RectPivot parentPivot, RectPivot anchorPivot)
             switch(anchorPivot)
             {
                 case RECTPIVOT_TOPLEFT:
-                    return Vec2(0.0f, 1.0f);
+                    ret = Vec2(0.0f, 1.0f);
+                    goto end;
                 case RECTPIVOT_TOPRIGHT:
-                    return Vec2(1.0f, 1.0f);
+                    ret = Vec2(1.0f, 1.0f);
+                    goto end;
                 case RECTPIVOT_BOTTOMLEFT:
-                    return Vec2(0.0f, 0.0f);
+                    ret = Vec2(0.0f, 0.0f);
+                    goto end;
                 case RECTPIVOT_BOTTOMRIGHT:
-                    return Vec2(1.0f, 0.0f);
+                    ret = Vec2(1.0f, 0.0f);
+                    goto end;
                 case RECTPIVOT_CENTER:
-                    return Vec2(0.5f, 0.5f);
+                    ret = Vec2(0.5f, 0.5f);
+                    goto end;
                 default:
-                    return Vec2::Zero();
+                    ret = Vec2::Zero();
+                    goto end;
             }
         } break;
         case RECTPIVOT_BOTTOMRIGHT:
@@ -97,23 +123,29 @@ Vec2 anchorOffset2(RectPivot parentPivot, RectPivot anchorPivot)
             switch(anchorPivot)
             {
                 case RECTPIVOT_TOPLEFT:
-                    return Vec2(-1.0f, 1.0f);
+                    ret = Vec2(-1.0f, 1.0f);
+                    goto end;
                 case RECTPIVOT_TOPRIGHT:
-                    return Vec2(0.0f, 1.0f);
+                    ret = Vec2(0.0f, 1.0f);
+                    goto end;
                 case RECTPIVOT_BOTTOMLEFT:
-                    return Vec2(-1.0f, 0.0f);
+                    ret = Vec2(-1.0f, 0.0f);
+                    goto end;
                 case RECTPIVOT_BOTTOMRIGHT:
-                    return Vec2(0.0f, 0.0f);
+                    ret = Vec2(0.0f, 0.0f);
+                    goto end;
                 case RECTPIVOT_CENTER:
-                    return Vec2(-0.5f, 0.5f);
+                    ret = Vec2(-0.5f, 0.5f);
+                    goto end;
                 default:
-                    return Vec2::Zero();
+                    ret = Vec2::Zero();
+                    goto end;
             }
 
         } break;
     }
-    assert(false);
-    return Vec2::Zero();
+    end:
+    return ret*size;
 }
 
 Vec2 TransformSystem::GetAnchor(i32 entity, RectPivot pivot)
@@ -124,13 +156,13 @@ Vec2 TransformSystem::GetAnchor(i32 entity, RectPivot pivot)
     if(entity == -1) // screen
     {
         scale = Vec2(4.0f*1.333f,4.0f);
-        offset = anchorOffset2(RECTPIVOT_BOTTOMLEFT, pivot);
+        offset = anchorOffset2(RECTPIVOT_BOTTOMLEFT, pivot, Vec2(1.0f,1.0f));
         return scale * offset;
     }
     else // some other entity
     {
         scale = _components->transforms[entity].scale;
-        offset = anchorOffset2(_components->recttransforms[entity].pivot, pivot);
+        offset = anchorOffset2(_components->recttransforms[entity].pivot, pivot, _components->recttransforms[entity].size);
         return scale*offset;
     }
 }
@@ -150,9 +182,9 @@ void TransformSystem::SetDirty(u32 entity)
 {
     _components->transforms[entity].dirty = true;
     // TODO: make better hierarchy tree system
-    for(u32 e = 0; e < MAX_ENTITIES; e++)
+    for(i32 e = 0; e < MAX_ENTITIES; e++)
     {
-        if(_components->transforms[e].parent == entity)
+        if(_components->transforms[e].parent == (i32)entity)
         {
             _components->transforms[e].dirty = true;
             SetDirty(e);
@@ -191,6 +223,7 @@ void TransformSystem::UpdateDirtyMatrices()
                     TransformComponent* transform = &_components->transforms[entity];
                     RectTransformComponent* rtransform = &_components->recttransforms[entity];
                     Vec2 anchor = GetAnchor(transform->parent, rtransform->anchor);
+                    printf("anchor %d %s %f %f\n", transform->parent,_components->names[entity].name.c_str(),anchor.x, anchor.y);
                     transform->position = anchor + transform->localPosition;
 
                     transform->modelMatrix = getMatrix2(transform->position, transform->scale, transform->rotation);

@@ -24,10 +24,16 @@ struct TransformComponent
     Mat4 modelMatrix;
 };
 
+struct NameComponent
+{
+    string name;
+};
+
 struct RectTransformComponent
 {
     RectPivot pivot;
     RectPivot anchor;
+    Vec2 size;
 };
 
 struct SpriteComponent
@@ -40,6 +46,11 @@ struct SpriteComponent
 
     u32 width;
     u32 height;
+};
+
+struct TextComponent
+{
+    string text;
 };
 
 #endif // COMPONENTS_H
