@@ -12,7 +12,10 @@
 #include "spriterendersystem.h"
 #include "textrendersystem.h"
 #include "transformsystem.h"
+#include "physicssystem.h"
 #include "renderer.h"
+#include "openglrenderer.h"
+#include "input.h"
 
 using std::vector;
 using std::array;
@@ -25,25 +28,33 @@ class Engine
 public:
     Engine();
     ~Engine();
-    void Init();
+    void Init(u32 width, u32 height);
     void Update(r32 dt);
     Entity CreateEntity(string name);
     Entity CreateScreenEntity(string name, RectPivot pivot, RectPivot anchor, u32 parent);
-    Entity CreateSprite(string name, string pathToTexture, RectPivot pivot, RectPivot anchor, u32 parent = -1);
-    Entity CreateText(string name, string text, r32 scale, RectPivot pivot, RectPivot anchor, u32 parent = -1);
-    void SetLocalPosition(Entity entity, Vec2 position);
-    void SetRotation(Entity entity, r32 rotation);
-    void SetScale(Entity entity, Vec2 scale);
+    Entity CreateUISprite(string name, string pathToTexture, RectPivot pivot, RectPivot anchor, u32 parent = -1);
+    Entity CreateUIText(string name, string text, r32 scale, RectPivot pivot, RectPivot anchor, u32 parent = -1);
+
+    Entity CreateSprite(string name, string pathToTexture, RectPivot pivot);
+
+    void SetGameProjection(Mat4& mat);
+
+    void SetScreenSize(IVec2 size);
+    Renderer* GetRenderer();
+
+    SpriteRenderSystem _spriteRenderSystem;
+    TextRenderSystem _textRenderSystem;
+    TransformSystem _transformSystem;
+    PhysicsSystem _physicsSystem;
+    Input _input;
 
 private:
 
     u32 _entityPtr = 0;
     ComponentManager _components;
-    SpriteRenderSystem _spriteRenderSystem;
-    TextRenderSystem _textRenderSystem;
-    TransformSystem _transformSystem;
-    Renderer _renderer;
-    //Text _text;
+    Renderer* _renderer;
+
+    bool _initialized = false;
 };
 
 #endif // ENGINE_H

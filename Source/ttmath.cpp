@@ -22,11 +22,26 @@ Vec2 Vec2::operator + (Vec2 const & in)
     return ret;
 }
 
+Vec2 Vec2::operator += (Vec2 const & in)
+{
+    this->x += in.x;
+    this->y += in.y;
+    return *this;
+}
+
 Vec2 Vec2::operator * (Vec2 const & in)
 {
     Vec2 ret;
     ret.x = this->x * in.x;
     ret.y = this->y * in.y;
+    return ret;
+}
+
+Vec2 Vec2::operator * (r32 const & in)
+{
+    Vec2 ret;
+    ret.x = this->x * in;
+    ret.y = this->y * in;
     return ret;
 }
 
@@ -38,7 +53,7 @@ IVec2::IVec2(i32 x, i32 y)
 
 Mat4 Mat4::operator * (Mat4 const & in)
 {
-    Mat4 ret;
+    Mat4 ret; // TODO: maybe loop is faster? Or just SIMD
     ret.m11 = m11 * in.m11 + m12 * in.m21 + m13 * in.m31 + m14 * in.m41;
     ret.m12 = m11 * in.m12 + m12 * in.m22 + m13 * in.m32 + m14 * in.m42;
     ret.m13 = m11 * in.m13 + m12 * in.m23 + m13 * in.m33 + m14 * in.m43;

@@ -9,8 +9,6 @@ TextRenderSystem::TextRenderSystem()
 
 void TextRenderSystem::Init(ComponentManager *components, Renderer *renderer)
 {
-    printf("textrender init\n");
-
     _components = components;
     _renderer = renderer;
 
@@ -72,29 +70,27 @@ void TextRenderSystem::Init(ComponentManager *components, Renderer *renderer)
     FT_Done_FreeType(_freetypelib);
 }
 
-void TextRenderSystem::Update()
+void TextRenderSystem::SetText(u32 entity, std::string text)
+{
+    _components->texts[entity].text = text;
+}
+
+void TextRenderSystem::Render()
 {
     for(u32 entity = 0; entity < MAX_ENTITIES; entity++)
     {
         if((_components->masks[entity] & TEXT_MASK) == TEXT_MASK)
         {
-            std::cout << "Render text!" << std::endl;
+            bool ui = (_components->masks[entity] & COMPONENT_RECTTRANSFORM) == COMPONENT_RECTTRANSFORM;
+            //std::cout << "Render text!" << std::endl;
 
             TextComponent* textc = &_components->texts[entity];
             TransformComponent* transc = &_components->transforms[entity];
             //RectTransformComponent* rtransc = &_components->recttransforms[entity];
 
-            Mat4 projM = ortho(0.0f, 4.0f*1.33333f, 0.0f, 4.0f);
-            glMatrixMode(GL_PROJECTION);
-            glLoadMatrixf((GLfloat*)&projM);
-            glMatrixMode(GL_MODELVIEW);
-            glLoadMatrixf((GLfloat*)&transc->modelMatrix);
-
-            glActiveTexture(GL_TEXTURE0);
-
             r32 x = 0.0f;
             r32 y = 0.0f;
-            r32 scale = transc->scale.x;
+            r32 scale = 1.0/64.0f;
 
             // Iterate through all characters
             std::string::const_iterator c;
@@ -108,29 +104,10 @@ void TextRenderSystem::Update()
                 GLfloat w = (r32)ch.Size.x * scale;
                 GLfloat h = (r32)ch.Size.y * scale;
 
-                // Render glyph texture over quad
-                glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-                glBegin(GL_TRIANGLES);
-
-                glTexCoord2f(   0.0, 0.0);
-                glVertex2f(xpos,     ypos + h);
-                glTexCoord2f(   0.0, 1.0);
-                glVertex2f(xpos,     ypos    );
-                glTexCoord2f(   1.0, 1.0);
-                glVertex2f(xpos + w, ypos    );
-                glTexCoord2f(   0.0, 0.0);
-                glVertex2f(xpos,     ypos + h);
-                glTexCoord2f(   1.0, 1.0);
-                glVertex2f(xpos + w, ypos   );
-                glTexCoord2f(   1.0, 0.0);
-                glVertex2f(xpos + w, ypos + h);
-                glEnd();
-
+                _renderer->PushTexturedQuadRenderCommand(Vec2(xpos,ypos + h), Vec2(xpos + w, ypos), transc->modelMatrix, ch.TextureID, ui);
 
                 x += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
             }
-
-            glBindTexture(GL_TEXTURE_2D, 0);
         }
     }
 }

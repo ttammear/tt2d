@@ -86,7 +86,7 @@ bool LinuxPlatform::CreateWindow(u32 width, u32 height, std::__cxx11::string tit
         // enable vsync
         GLXDrawable drawable = glXGetCurrentDrawable();
         if (drawable) {
-            glXSwapInterval(_display, drawable, 1);
+            //glXSwapInterval(_display, drawable, 1);
         }
     }
 
@@ -108,97 +108,89 @@ bool LinuxPlatform::CreateWindow(u32 width, u32 height, std::__cxx11::string tit
         return false;
     }
     printf("window create\n");
+    glEnable (GL_TEXTURE_2D);
     glEnable (GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_FRAMEBUFFER_SRGB);
 
-    glEnable (GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
+    //glEnable (GL_DEPTH_TEST);
+    //glDepthFunc(GL_LEQUAL);
 
     // TODO: this doesnt belong here
-    _engine.Init();
+    //_engine.Init(width, height);
 
     return Platform::CreateWindow(width, height, title);
 }
 
-void LinuxPlatform::Run()
+bool LinuxPlatform::ProcessEvents()
 {
-    XEvent event;
-    b32 running = true;
-    struct timespec start;
-    clock_gettime(CLOCK_MONOTONIC, &start);
-    while(running)
+    for(int i = 0; i < KEY_COUNT; i++)
     {
-        while (XPending(_display) > 0)
-        {
-            // Fetch next event:
-            XNextEvent(_display, &event);
-            char buffer[20];
-            int bufsize = 20;
-            KeySym key;
-            XComposeStatus compose;
-            //int charcount;
-            // Process the event:
-            switch (event.type) {
-            case ClientMessage:
-                if (event.xclient.data.l[0] == (long)_wmDeleteMessage)
-                {
-                    printf("Delete message! Exiting...\n");
-                    running = false;
-                }
-                break;
-            case MotionNotify:
-                //input.mousePosition.x = event.xmotion.x;
-                //input.mousePosition.y = event.xmotion.y;
-
-                //input.mouseCoord.x = (input.mousePosition.x/width)*2.0f - 1.0f;
-                //input.mouseCoord.y = (1.0 - (input.mousePosition.y/height))*2.0f - 1.0f;
-                //pMouse(event.xmotion.x,event.xmotion.y);
-                break;
-            case KeyPress:
-                {
-                    // TODO: ther could be multiple characters?
-                    XLookupString((XKeyEvent*)&event, buffer, bufsize, &key, &compose);
-                    //int keycode = charToKeycode(buffer[0]);
-                    //input.keyStates[keycode] = 1;;
-                }
-                break;
-            case KeyRelease:
-                {
-                    XLookupString((XKeyEvent*)&event, buffer, bufsize, &key, &compose);
-                    //int keycode = charToKeycode(buffer[0]);
-                    //input.keyStates[keycode] = 0;
-                }
-                break;
-            case ConfigureNotify:
-                {
-                    XConfigureEvent xce = event.xconfigure;
-                    // TODO: this event might not always be a resize event?
-                    ///*width = */xce.width;
-                    ///*height = */xce.height;
-                    //reshape(eMem,xce.width,xce.height);
-                    glViewport  ( 0,0,xce.width,xce.height);
-
-                }
-                break;
-            }
-        }
-
-        glClearColor(1.0f,0.0f,1.0f,1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        struct timespec last = start;
-        clock_gettime(CLOCK_MONOTONIC, &start);
-        float seconds = start.tv_sec-last.tv_sec+(start.tv_nsec-last.tv_nsec)/1000000000.0;
-
-        Platform::Update(seconds);
-
-        printf("frame time: %f err: %d\n", seconds, glGetError());
-        glXSwapBuffers(_display, _window);
-
-        /*for(int i = 0; i < KEY_COUNT; i++)
-        {
-            input.keyStatesLastFrame[i] = input.keyStates[i];
-        }*/
+        _engine->_input._input.keyStatesLastFrame[i] = _engine->_input._input.keyStates[i];
     }
+
+    XEvent event;
+    while (XPending(_display) > 0)
+    {
+        // Fetch next event:
+        XNextEvent(_display, &event);
+        char buffer[20];
+        int bufsize = 20;
+        KeySym key;
+        XComposeStatus compose;
+        //int charcount;
+        // Process the event:
+        switch (event.type) {
+        case ClientMessage:
+            if (event.xclient.data.l[0] == (long)_wmDeleteMessage)
+            {
+                printf("Delete message! Exiting...\n");
+                return false;
+            }
+            break;
+        case MotionNotify:
+            //Input::_input.mousePosition.x
+            _engine->_input._input.mousePosition.x = event.xmotion.x;
+            _engine->_input._input.mousePosition.y = event.xmotion.y;
+
+            //Input::_input.mouseCoord.x = (Input::_input.mousePosition.x/width)*2.0f - 1.0f;
+            //Input::_input.mouseCoord.y = (1.0 - (Input::_input.mousePosition.y/height))*2.0f - 1.0f;
+            //pMouse(event.xmotion.x,event.xmotion.y);
+            break;
+        case KeyPress:
+            {
+                // TODO: ther could be multiple characters?
+                XLookupString((XKeyEvent*)&event, buffer, bufsize, &key, &compose);
+                int keycode = charToKeycode(buffer[0]);
+                _engine->_input._input.keyStates[keycode] = 1;;
+            }
+            break;
+        case KeyRelease:
+            {
+                XLookupString((XKeyEvent*)&event, buffer, bufsize, &key, &compose);
+                int keycode = charToKeycode(buffer[0]);
+                _engine->_input._input.keyStates[keycode] = 0;
+            }
+            break;
+        case ConfigureNotify:
+            {
+                XConfigureEvent xce = event.xconfigure;
+                // TODO: this event might not always be a resize event?
+                ///*width = */xce.width;
+                ///*height = */xce.height;
+                //reshape(eMem,xce.width,xce.height);
+                _engine->SetScreenSize(IVec2(xce.width, xce.height));
+                glViewport  ( 0,0,xce.width,xce.height);
+
+            }
+            break;
+        }
+    }
+
+    return true;
+}
+
+void LinuxPlatform::Swap()
+{
+    glXSwapBuffers(_display, _window);
 }

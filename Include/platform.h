@@ -14,12 +14,13 @@ public:
     ~Platform();
 
     bool Init();
-    virtual bool CreateWindow(u32 width, u32 height, string title);
-    virtual void Run();
-    void Update(r32 dt);
+    virtual bool CreateWindow(u32, u32, string);
+    virtual void Swap();
+    virtual bool ProcessEvents();
+    void SetEngine(Engine* engine);
 
 protected:
-    Engine _engine;
+    Engine *_engine;
 
     /*virtual bool OpenFile(string name);
     virtual bool OpenFile(string name);*/

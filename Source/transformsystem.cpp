@@ -155,21 +155,22 @@ Vec2 TransformSystem::GetAnchor(i32 entity, RectPivot pivot)
 
     if(entity == -1) // screen
     {
-        scale = Vec2(4.0f*1.333f,4.0f);
+        scale = _renderer->GetScreenSize();
         offset = anchorOffset2(RECTPIVOT_BOTTOMLEFT, pivot, Vec2(1.0f,1.0f));
         return scale * offset;
     }
     else // some other entity
     {
-        scale = _components->transforms[entity].scale;
+        scale = Vec2(1.0f,1.0f);
         offset = anchorOffset2(_components->recttransforms[entity].pivot, pivot, _components->recttransforms[entity].size);
-        return scale*offset;
+        return scale * offset;
     }
 }
 
-void TransformSystem::Init(ComponentManager* components)
+void TransformSystem::Init(ComponentManager *components, Renderer *renderer)
 {
     _components = components;
+    _renderer = renderer;
 }
 
 void TransformSystem::SetLocalPosition(u32 entity, Vec2 position)
@@ -189,6 +190,14 @@ void TransformSystem::SetDirty(u32 entity)
             _components->transforms[e].dirty = true;
             SetDirty(e);
         }
+    }
+}
+
+void TransformSystem::AllDirty()
+{
+    for(u32 entity = 0; entity < MAX_ENTITIES; entity++)
+    {
+        _components->transforms[entity].dirty = true;
     }
 }
 
@@ -235,7 +244,15 @@ void TransformSystem::UpdateDirtyMatrices()
                 }
                 else
                 {
-                    assert(false);
+                    TransformComponent* transform = &_components->transforms[entity];
+                    transform->position = transform->localPosition;
+
+                    transform->modelMatrix = getMatrix2(transform->position, transform->scale, transform->rotation);
+                    if(transform->parent != -1)
+                    {
+                        transform->modelMatrix = _components->transforms[transform->parent].modelMatrix*transform->modelMatrix;
+                    }
+                    transform->dirty = false;
                 }
             }
         }

@@ -11,7 +11,7 @@ class Texture2D
 public:
     Texture2D() = default;
     Texture2D(string path);
-    ~Texture2D();
+    virtual ~Texture2D();
 
     bool Load();
     virtual bool RendererAllocate();

@@ -1,7 +1,7 @@
 #include "texture2d.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "lib/stb_image.h"
+#include "stb_image.h"
 
 Texture2D::Texture2D(string path)
 {
@@ -18,7 +18,7 @@ Texture2D::~Texture2D()
 
 bool Texture2D::Load()
 {
-    _memory = stbi_load(_path.c_str(), &_width, &_height, &_numComponents, 4);
+    _memory = stbi_load(_path.c_str(), &_width, &_height, &_numComponents, 0);
     printf("components: %d\n",_numComponents);
     if(_memory != nullptr)
     {

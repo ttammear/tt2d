@@ -39,11 +39,8 @@ struct RectTransformComponent
 struct SpriteComponent
 {
     Texture2D* texture;
-    //RectPivot pivot;
-    //RectPivot anchor;
-    //i32 parent = -1;
     bool isVisible;
-
+    RectPivot pivot;
     u32 width;
     u32 height;
 };
@@ -51,6 +48,12 @@ struct SpriteComponent
 struct TextComponent
 {
     string text;
+};
+
+struct PhysicsComponent
+{
+    Vec2 velocity;
+    //r32 angularVelocity;
 };
 
 #endif // COMPONENTS_H

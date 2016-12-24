@@ -23,7 +23,8 @@ class TextRenderSystem
 {
 public:
     TextRenderSystem();
-    void Update();
+    void SetText(u32 entity, std::string text);
+    void Render();
     void Init(ComponentManager *components, Renderer *renderer);
 
 private:

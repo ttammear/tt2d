@@ -12,7 +12,8 @@ enum Component
     COMPONENT_TRANSFORM     =       1 << 0,
     COMPONENT_SPRITE        =       1 << 1,
     COMPONENT_RECTTRANSFORM =       1 << 2,
-    COMPONENT_TEXT          =       1 << 3
+    COMPONENT_TEXT          =       1 << 3,
+    COMPONENT_PHYSICS       =       1 << 4,
 };
 
 using std::array;
@@ -30,6 +31,7 @@ public:
     array<SpriteComponent, MAX_ENTITIES> sprites;
     array<TextComponent, MAX_ENTITIES> texts;
     array<NameComponent, MAX_ENTITIES> names;
+    array<PhysicsComponent, MAX_ENTITIES> physics;
 };
 
 #endif // COMPONENTMANAGER_H

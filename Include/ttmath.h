@@ -14,7 +14,9 @@ struct Vec2
 
     static Vec2 Zero();
     Vec2 operator + (Vec2 const & in);
+    Vec2 operator += (Vec2 const & in);
     Vec2 operator * (Vec2 const & in);
+    Vec2 operator * (r32 const & in);
 };
 
 struct IVec2

@@ -1,36 +1,44 @@
-TEMPLATE = app
-CONFIG += console c++11
+TEMPLATE = lib
+CONFIG += staticlib c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += main.cpp \
-    renderer.cpp \
-    linuxplatform.cpp \
-    platform.cpp \
-    engine.cpp \
-    ttmath.cpp \
-    texture2d.cpp \
-    opengltexture2d.cpp \
-    componentmanager.cpp \
-    spriterendersystem.cpp \
-    transformsystem.cpp \
-    textrendersystem.cpp
+QMAKE_CXXFLAGS += -Wall
+
+SOURCES += Source/componentmanager.cpp \
+    Source/engine.cpp \
+    Source/linuxplatform.cpp \
+    Source/openglrenderer.cpp \
+    Source/opengltexture2d.cpp \
+    Source/platform.cpp \
+    Source/renderer.cpp \
+    Source/spriterendersystem.cpp \
+    Source/textrendersystem.cpp \
+    Source/texture2d.cpp \
+    Source/transformsystem.cpp \
+    Source/ttmath.cpp \
+    Include/input.cpp \
+    Source/physicssystem.cpp
 
 HEADERS += \
-    platform.h \
-    renderer.h \
-    main.h \
-    shared.h \
-    linuxplatform.h \
-    engine.h \
-    ttmath.h \
-    components.h \
-    texture2d.h \
-    opengltexture2d.h \
-    componentmanager.h \
-    spriterendersystem.h \
-    transformsystem.h \
-    textrendersystem.h
+    Include/componentmanager.h \
+    Include/components.h \
+    Include/engine.h \
+    Include/linuxplatform.h \
+    Include/openglrenderer.h \
+    Include/opengltexture2d.h \
+    Include/platform.h \
+    Include/renderer.h \
+    Include/shared.h \
+    Include/spriterendersystem.h \
+    Include/stb_image.h \
+    Include/stb_truetype.h \
+    Include/textrendersystem.h \
+    Include/texture2d.h \
+    Include/transformsystem.h \
+    Include/ttmath.h \
+    Include/input.h \
+    Include/physicssystem.h
 
 LIBS += \
     -lGL \
@@ -39,4 +47,6 @@ LIBS += \
     -lfreetype
 
 INCLUDEPATH += \
-    /usr/include/freetype2
+    /usr/include/freetype2 \
+    Include \
+    lib
