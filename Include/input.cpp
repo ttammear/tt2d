@@ -2,7 +2,11 @@
 
 Input::Input()
 {
-
+    for(u32 key = 0; key < KEY_COUNT; key++)
+    {
+        _input.keyStates[key] = 0;
+        _input.keyStatesLastFrame[key] = 0;
+    }
 }
 
 bool Input::GetKeyDown(u32 keyCode)

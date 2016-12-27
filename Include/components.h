@@ -56,4 +56,14 @@ struct PhysicsComponent
     //r32 angularVelocity;
 };
 
+#define COLLISIONFUNC(name) void name(u32 current, u32 other, void* userData)
+typedef COLLISIONFUNC(CollisionCallback_t);
+
+struct ColliderComponent
+{
+    bool enabled;
+    CollisionCallback_t *collisionCallback = 0;
+    void* userData;
+};
+
 #endif // COMPONENTS_H

@@ -23,6 +23,7 @@ void PhysicsSystem::Update(r32 dt)
             PhysicsComponent* phys = &_components->physics[entity];
             _components->transforms[entity].localPosition += phys->velocity*dt;
             _transforms->SetDirty(entity);
+            printf("physics update\n");
         }
     }
 }

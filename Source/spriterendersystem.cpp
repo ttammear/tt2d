@@ -19,6 +19,8 @@ void SpriteRenderSystem::Init(ComponentManager* components, Renderer* renderer)
     _renderer = renderer;
 }
 
+//void SpriteRenderSystem::
+
 void SpriteRenderSystem::Update()
 {  
     for(u32 entity = 0; entity < MAX_ENTITIES; entity++)

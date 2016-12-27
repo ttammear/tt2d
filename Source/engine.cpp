@@ -30,6 +30,7 @@ void Engine::Init(u32 screenWidth, u32 screenHeight)
     _textRenderSystem.Init(&_components, _renderer);
     _transformSystem.Init(&_components, _renderer);
     _physicsSystem.Init(&_components, &_transformSystem);
+    _collisionSystem.Init(&_components);
     printf("engine init");
 
     //Entity sprite1 =_engine.CreateSprite("sprite", "forwardp.jpg", RECTPIVOT_CENTER, RECTPIVOT_CENTER);
@@ -61,6 +62,7 @@ void Engine::Update(r32 dt)
     _transformSystem.UpdateDirtyMatrices();
     _spriteRenderSystem.Update();
     _textRenderSystem.Render();
+    _collisionSystem.Update();
 
     _renderer->RenderGame();
     _renderer->RenderUI();

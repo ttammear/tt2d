@@ -3,6 +3,7 @@
 
 #include "platform.h"
 #include <X11/Xlib.h>
+#include <sys/resource.h>
 #include <GL/glew.h>
 #include <GL/glx.h>
 

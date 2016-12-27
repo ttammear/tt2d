@@ -14,7 +14,6 @@ public:
     SpriteRenderSystem(ComponentManager* components);
     void Update();
     void Init(ComponentManager *components, Renderer *renderer);
-    Vec2 GetAnchor(i32 entity, RectPivot pivot);
 
 private:
     ComponentManager* _components;

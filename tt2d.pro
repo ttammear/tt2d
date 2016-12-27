@@ -3,7 +3,7 @@ CONFIG += staticlib c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-QMAKE_CXXFLAGS += -Wall
+QMAKE_CXXFLAGS += -Wall -fstack-protector
 
 SOURCES += Source/componentmanager.cpp \
     Source/engine.cpp \
@@ -18,7 +18,8 @@ SOURCES += Source/componentmanager.cpp \
     Source/transformsystem.cpp \
     Source/ttmath.cpp \
     Include/input.cpp \
-    Source/physicssystem.cpp
+    Source/physicssystem.cpp \
+    Source/collisionsystem.cpp
 
 HEADERS += \
     Include/componentmanager.h \
@@ -38,7 +39,8 @@ HEADERS += \
     Include/transformsystem.h \
     Include/ttmath.h \
     Include/input.h \
-    Include/physicssystem.h
+    Include/physicssystem.h \
+    Include/collisionsystem.h
 
 LIBS += \
     -lGL \

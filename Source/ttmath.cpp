@@ -14,6 +14,19 @@ Vec2 Vec2::Zero()
     return ret;
 }
 
+r32 Vec2::Magnitude()
+{
+    return sqrt(this->x*this->x+this->y*this->y);
+}
+
+Vec2 Vec2::operator - (Vec2 const & in)
+{
+    Vec2 ret;
+    ret.x = this->x - in.x;
+    ret.y = this->y - in.y;
+    return ret;
+}
+
 Vec2 Vec2::operator + (Vec2 const & in)
 {
     Vec2 ret;

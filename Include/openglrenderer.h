@@ -17,7 +17,7 @@ public:
     void Swap();
 
 private:
-    void ExecuteCommands(Mat4* mat, void* pushBuffer, u32 pointer);
+    void ExecuteCommands(void* pushBuffer, u32 pointer);
 };
 
 #endif // OPENGLRENDERER_H

@@ -9,6 +9,24 @@ bool LinuxPlatform::Init()
 {
     _display = XOpenDisplay(":0.0");
 
+    const rlim_t kStackSize = 16 * 1024 * 1024;   // min stack size = 16 MB
+    struct rlimit rl;
+    int result;
+
+    result = getrlimit(RLIMIT_STACK, &rl);
+    if (result == 0)
+    {
+        if (rl.rlim_cur < kStackSize)
+        {
+            rl.rlim_cur = kStackSize;
+            result = setrlimit(RLIMIT_STACK, &rl);
+            if (result != 0)
+            {
+                fprintf(stderr, "setrlimit returned result = %d\n", result);
+            }
+        }
+    }
+
     return Platform::Init();
 }
 
@@ -86,7 +104,7 @@ bool LinuxPlatform::CreateWindow(u32 width, u32 height, std::__cxx11::string tit
         // enable vsync
         GLXDrawable drawable = glXGetCurrentDrawable();
         if (drawable) {
-            //glXSwapInterval(_display, drawable, 1);
+            glXSwapInterval(_display, drawable, 1);
         }
     }
 
@@ -162,14 +180,16 @@ bool LinuxPlatform::ProcessEvents()
                 // TODO: ther could be multiple characters?
                 XLookupString((XKeyEvent*)&event, buffer, bufsize, &key, &compose);
                 int keycode = charToKeycode(buffer[0]);
-                _engine->_input._input.keyStates[keycode] = 1;;
+                if(keycode != -1)
+                    _engine->_input._input.keyStates[keycode] = 1;;
             }
             break;
         case KeyRelease:
             {
                 XLookupString((XKeyEvent*)&event, buffer, bufsize, &key, &compose);
                 int keycode = charToKeycode(buffer[0]);
-                _engine->_input._input.keyStates[keycode] = 0;
+                if(keycode != -1)
+                    _engine->_input._input.keyStates[keycode] = 0;
             }
             break;
         case ConfigureNotify:

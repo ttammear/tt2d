@@ -229,8 +229,8 @@ void TransformSystem::UpdateDirtyMatrices()
             {
                 if((_components->masks[entity] & RECTTRANSFORM_MASK))
                 {
-                    TransformComponent* transform = &_components->transforms[entity];
-                    RectTransformComponent* rtransform = &_components->recttransforms[entity];
+                    TransformComponent* transform = &(_components->transforms[entity]);
+                    RectTransformComponent* rtransform = &(_components->recttransforms[entity]);
                     Vec2 anchor = GetAnchor(transform->parent, rtransform->anchor);
                     printf("anchor %d %s %f %f\n", transform->parent,_components->names[entity].name.c_str(),anchor.x, anchor.y);
                     transform->position = anchor + transform->localPosition;
@@ -244,7 +244,7 @@ void TransformSystem::UpdateDirtyMatrices()
                 }
                 else
                 {
-                    TransformComponent* transform = &_components->transforms[entity];
+                    TransformComponent* transform = &(_components->transforms[entity]);
                     transform->position = transform->localPosition;
 
                     transform->modelMatrix = getMatrix2(transform->position, transform->scale, transform->rotation);

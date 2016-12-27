@@ -16,6 +16,7 @@
 #include "renderer.h"
 #include "openglrenderer.h"
 #include "input.h"
+#include "collisionsystem.h"
 
 using std::vector;
 using std::array;
@@ -46,12 +47,14 @@ public:
     TextRenderSystem _textRenderSystem;
     TransformSystem _transformSystem;
     PhysicsSystem _physicsSystem;
+    CollisionSystem _collisionSystem;
+    ComponentManager _components;
+
     Input _input;
 
 private:
 
     u32 _entityPtr = 0;
-    ComponentManager _components;
     Renderer* _renderer;
 
     bool _initialized = false;

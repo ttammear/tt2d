@@ -11,8 +11,10 @@ struct Vec2
 
     Vec2() = default;
     Vec2(r32 x, r32 y);
+    r32 Magnitude();
 
     static Vec2 Zero();
+    Vec2 operator - (Vec2 const & in);
     Vec2 operator + (Vec2 const & in);
     Vec2 operator += (Vec2 const & in);
     Vec2 operator * (Vec2 const & in);

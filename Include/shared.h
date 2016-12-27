@@ -21,6 +21,8 @@ typedef i32 b32;
 typedef float r32;
 typedef double r64;
 
+#define COUNT_OF(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
+
 #ifdef ENGINEBUILD_SLOW
 #define assert(expr) {if(!(expr)) { printf("Assertion failed at %s:%d in function %s\n",__FILE__,__LINE__,__func__); __builtin_trap(); }}
 #else

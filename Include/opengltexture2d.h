@@ -6,6 +6,7 @@
 
 class OpenglTexture2D : public Texture2D
 {
+    friend class OpenglRenderer;
 public:
     OpenglTexture2D(string path);
     virtual bool RendererAllocate();

@@ -5,10 +5,8 @@ OpenglRenderer::OpenglRenderer(u32 screenWidth, u32 screenHeight) : Renderer(scr
 
 }
 
-inline void OpenglRenderer::ExecuteCommands(Mat4* mat, void* pushBuffer, u32 pointer)
+inline void OpenglRenderer::ExecuteCommands(void* pushBuffer, u32 pointer)
 {
-    glLoadMatrixf((GLfloat*)mat);
-
     u8* curCmd = (u8*)pushBuffer;
     while(curCmd < (u8*)pushBuffer + pointer)
     {
@@ -43,7 +41,8 @@ inline void OpenglRenderer::ExecuteCommands(Mat4* mat, void* pushBuffer, u32 poi
 void OpenglRenderer::RenderGame()
 {
     glMatrixMode(GL_PROJECTION);
-    ExecuteCommands(&_gameMatrix, _pushBuffer, _pushBufferPointer);
+    glLoadMatrixf((GLfloat*)&_gameMatrix);
+    ExecuteCommands(_pushBuffer, _pushBufferPointer);
     _pushBufferPointer = 0;
 }
 
@@ -51,7 +50,8 @@ void OpenglRenderer::RenderUI()
 {
     Mat4 projM = ortho(0.0f, (r32)_pixelSize.x, 0.0f, (r32)_pixelSize.y);
     glMatrixMode(GL_PROJECTION);
-    ExecuteCommands(&projM, _uiPushBuffer, _uiPushBufferPointer);
+    glLoadMatrixf((GLfloat*)&projM);
+    ExecuteCommands(_uiPushBuffer, _uiPushBufferPointer);
     _uiPushBufferPointer = 0;
 }
 
