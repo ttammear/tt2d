@@ -75,10 +75,11 @@ void TextRenderSystem::SetText(u32 entity, std::string text)
     _components->texts[entity].text = text;
 }
 
-void TextRenderSystem::Render()
+void TextRenderSystem::Render(u32 entities[], u32 numEntities)
 {
-    for(u32 entity = 0; entity < MAX_ENTITIES; entity++)
+    for(u32 i = 0; i < numEntities; i++)
     {
+        u32 entity = entities[i];
         if((_components->masks[entity] & TEXT_MASK) == TEXT_MASK)
         {
             bool ui = (_components->masks[entity] & COMPONENT_RECTTRANSFORM) == COMPONENT_RECTTRANSFORM;
@@ -104,7 +105,15 @@ void TextRenderSystem::Render()
                 GLfloat w = (r32)ch.Size.x * scale;
                 GLfloat h = (r32)ch.Size.y * scale;
 
-                _renderer->PushTexturedQuadRenderCommand(Vec2(xpos,ypos + h), Vec2(xpos + w, ypos), transc->modelMatrix, ch.TextureID, ui);
+                Rect rect;
+                rect.x = xpos;
+                rect.y = ypos;
+                rect.width = w;
+                rect.height = h;
+
+                Rect texRect(0.0f, 0.0f, 1.0f, 1.0f);
+
+                _renderer->PushTexturedQuadRenderCommand(rect, texRect, transc->modelMatrix, ch.TextureID, ui);
 
                 x += (ch.Advance >> 6) * scale; // Bitshift by 6 to get value in pixels (2^6 = 64)
             }

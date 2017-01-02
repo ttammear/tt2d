@@ -35,15 +35,6 @@
 #define KEYCODE_LSHIFT          29
 #define KEYCODE_LCTRL           30
 
-/*#define getKeyDown(input, keycode) \
-    ((input)->keyStates[(keycode)] == 1 && (input)->keyStatesLastFrame[(keycode)] == 0)
-
-#define getKeyUp(input, keycode) \
-    ((input)->keyStates[(keycode)] == 1 && (input)->keyStatesLastFrame[(keycode)] == 0)
-
-#define getKey(input, keycode) \
-    ((input)->keyStates[(keycode)])*/
-
 #define KEY_COUNT   32
 typedef struct InputState
 {
@@ -59,6 +50,7 @@ class Input
 {
     // TODO: friendship to platform not implementation
     friend class LinuxPlatform;
+    friend class WindowsPlatform;
 public:
     Input();
     bool GetKeyDown(u32 keyCode);

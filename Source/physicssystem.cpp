@@ -16,14 +16,14 @@ void PhysicsSystem::Init(ComponentManager *components, TransformSystem* transfor
 
 void PhysicsSystem::Update(r32 dt)
 {
-    for(u32 entity = 0; entity < MAX_ENTITIES; entity++)
+    for(u32 entity = 0; entity < _components->_entityPtr; entity++)
     {
         if((_components->masks[entity] & PHYSICS_MASK) == PHYSICS_MASK)
         {
             PhysicsComponent* phys = &_components->physics[entity];
+            phys->velocity -= phys->velocity*phys->drag*dt;
             _components->transforms[entity].localPosition += phys->velocity*dt;
             _transforms->SetDirty(entity);
-            printf("physics update\n");
         }
     }
 }
@@ -33,6 +33,11 @@ void PhysicsSystem::SetVelocity(u32 entity, Vec2 vel)
     // TODO: remove this hack
     _components->masks[entity] |= COMPONENT_PHYSICS;
     _components->physics[entity].velocity = vel;
+}
+
+void PhysicsSystem::SetDrag(u32 entity, r32 drag)
+{
+    _components->physics[entity].drag = drag;
 }
 
 #include <math.h>

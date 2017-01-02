@@ -21,7 +21,7 @@ bool Input::GetKeyUp(u32 keyCode)
 
 bool Input::GetKey(u32 keyCode)
 {
-    return _input.keyStates[keyCode];
+    return _input.keyStates[keyCode] != 0;
 }
 
 int charToKeycode(char ch)

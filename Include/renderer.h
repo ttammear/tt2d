@@ -7,8 +7,8 @@
 #include "ttmath.h"
 #include "texture2d.h"
 
-#define UI_PUSH_BUFFER_SIZE 5*1024*1024
-#define GAME_PUSH_BUFFER_SIZE 5*1024*1024
+#define INITIAL_UI_PUSH_BUFFER_SIZE 5*1024
+#define INITIAL_GAME_PUSH_BUFFER_SIZE 5*1024
 
 using std::vector;
 
@@ -25,8 +25,8 @@ struct RenderCommandHeader
 
 struct TexturedQuadRenderCommand : RenderCommandHeader
 {
-    Vec2 topleft;
-    Vec2 bottomright;
+    Rect rect;
+    Rect texRect;
     u32 rendererHandle;
     Mat4 mat;
 };
@@ -42,17 +42,21 @@ class Renderer
     friend class Engine;
 public:
     Renderer(u32 width, u32 height);
+    Renderer(const Renderer& that) = delete;
+    Renderer& operator=(const Renderer&) = delete;
     virtual ~Renderer();
-    virtual void Initialize();
+    void Initialize();
     void SetTransform(CameraTransform transform);
-    void PushTexturedQuadRenderCommand(Vec2 topleft, Vec2 bottomright, Mat4 mat, u32 textureHandle, bool isUI);
-    void ResetPushBuffer();
+    void PushTexturedQuadRenderCommand(Rect rect, Rect texRect, Mat4 mat, u32 textureHandle, bool isUI);
     Vec2 GetScreenSize();
     void Rescale(IVec2 newSize);
-    virtual void RenderGame();
-    virtual void RenderUI();
-    virtual void ClearScreen();
-    virtual void Swap();
+    virtual void RenderGame() = 0;
+    virtual void RenderUI() = 0;
+    // TODO: make this a render command
+    virtual void ClearScreen(r32 r, r32 g, r32 b) = 0;
+    virtual void Swap() = 0;
+    virtual void Flush() = 0;
+    virtual Texture2D* CreateTexture() = 0;
 
 protected:
     void PushRenderCommand(RenderCommandHeader* command, bool ui);
@@ -62,9 +66,11 @@ protected:
     void* _pushBuffer = 0;
     u32 _pushBufferPointer = 0;
 
+    u32 _currentGameBufferSize = INITIAL_GAME_PUSH_BUFFER_SIZE;
+    u32 _currentUIBufferSize = INITIAL_UI_PUSH_BUFFER_SIZE;
+
     Mat4 _gameMatrix;
 
-    vector<RenderCommandHeader> renderCommands;
     CameraTransform _cameraTransform;
     IVec2 _pixelSize;
     r32 _aspectRatio;

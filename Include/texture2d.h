@@ -10,10 +10,11 @@ class Texture2D
 {
 public:
     Texture2D() = default;
-    Texture2D(string path);
+    Texture2D(const Texture2D& that) = delete;
+    Texture2D& operator=(const Texture2D&) = delete;
     virtual ~Texture2D();
 
-    bool Load();
+    bool Load(string path);
     virtual bool RendererAllocate();
     u32 GetWidth();
     u32 GetHeight();

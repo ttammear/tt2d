@@ -4,7 +4,6 @@ Platform::Platform()
 {
 
 }
-
 Platform::~Platform()
 {
 
@@ -15,10 +14,11 @@ bool Platform::Init()
     return true;
 }
 
-bool Platform::CreateWindow(u32, u32, string)
+bool Platform::TTCreateNewWindow(u32, u32, string)
 {
     return true;
 }
+
 
 void Platform::SetEngine(Engine *engine)
 {

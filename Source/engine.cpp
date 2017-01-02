@@ -9,15 +9,30 @@ Engine::~Engine()
 {
     if(_initialized)
     {
-        for(u32 e = 0; e < MAX_ENTITIES; e++)
+        for (std::map<string, Texture2D*>::iterator it=_textureCache.begin(); it!=_textureCache.end(); ++it)
         {
-            // FREE textures
-            if((_components.masks[e] & COMPONENT_SPRITE) == COMPONENT_SPRITE)
-            {
-                delete _components.sprites[e].texture;
-            }
+            printf("texture deleted\n");
+            delete it->second;
         }
         delete _renderer;
+    }
+}
+
+Texture2D* Engine::GetTexture(string path)
+{
+    auto it = _textureCache.find(path);
+    if (it != _textureCache.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        Texture2D *ret = _renderer->CreateTexture();
+        ret->Load(path);
+        ret->RendererAllocate();
+        printf("Created texture %s\n", path.c_str());
+        _textureCache.insert(std::pair<string, Texture2D*>(path, ret));
+        return ret;
     }
 }
 
@@ -31,41 +46,34 @@ void Engine::Init(u32 screenWidth, u32 screenHeight)
     _transformSystem.Init(&_components, _renderer);
     _physicsSystem.Init(&_components, &_transformSystem);
     _collisionSystem.Init(&_components);
-    printf("engine init");
-
-    //Entity sprite1 =_engine.CreateSprite("sprite", "forwardp.jpg", RECTPIVOT_CENTER, RECTPIVOT_CENTER);
-
-    //Entity sprite3 = CreateSprite("sprite3", "test.png", RECTPIVOT_CENTER, RECTPIVOT_CENTER);
-    //Entity sprite2 = CreateSprite("sprite2", "forwardp.jpg", RECTPIVOT_CENTER, RECTPIVOT_TOPLEFT, sprite3);
-    //Entity text1 = CreateText("text1", "Just testing!", 1.0f, RECTPIVOT_BOTTOMLEFT, RECTPIVOT_BOTTOMRIGHT, sprite3);
-    //_transformSystem.SetLocalPosition(text1, Vec2(0.0f,-0.0f));
-    //_transformSystem.SetScale(sprite3, Vec2(100.0f,100.0f));
-    //_transformSystem.SetScale(sprite2, Vec2(1.0f,1.0f));
-
     _initialized = true;
 }
 
 void Engine::SetScreenSize(IVec2 size)
 {
-    printf("rescale \n");
     _renderer->Rescale(size);
     _transformSystem.AllDirty();
 }
 
 void Engine::Update(r32 dt)
 {
-    //_transformSystem.Rotate(0,0.2f*dt);
-    //_transformSystem.Rotate(1,2.f*dt);
-    //_transformSystem.Rotate(1,0.02f*dt);
-    //_transformSystem.Rotate(2,0.010f*dt);
+    u32 numActiveEntities = 0;
+    u32 activeEntities[MAX_ENTITIES];
+    for(u32 i = 0; i < _components._entityPtr; i++)
+    {
+        if((_components.names[i].flags & COREFLAG_ACTIVE) != 0)
+            activeEntities[numActiveEntities++] = i;
+    }
+
     _physicsSystem.Update(dt);
     _transformSystem.UpdateDirtyMatrices();
-    _spriteRenderSystem.Update();
-    _textRenderSystem.Render();
-    _collisionSystem.Update();
+    _textRenderSystem.Render(activeEntities, numActiveEntities);
+    _spriteRenderSystem.Update(activeEntities, numActiveEntities, dt);
+    _collisionSystem.Update(activeEntities, numActiveEntities);
 
     _renderer->RenderGame();
     _renderer->RenderUI();
+    _renderer->Flush();
 }
 
 Renderer* Engine::GetRenderer()
@@ -73,17 +81,9 @@ Renderer* Engine::GetRenderer()
     return _renderer;
 }
 
-Entity Engine::CreateEntity(string name)
-{
-    Entity entity = _entityPtr++;
-    _components.masks[entity] = COMPONENT_NONE;
-    _components.names[entity].name.assign(name);
-    return entity;
-}
-
 Entity Engine::CreateScreenEntity(string name, RectPivot pivot, RectPivot anchor, u32 parent)
 {
-    Entity entity = CreateEntity(name);
+    Entity entity = _components.CreateEntity(name);
 
     _components.masks[entity] |= ( COMPONENT_TRANSFORM | COMPONENT_RECTTRANSFORM);
     _transformSystem.SetLocalPosition(entity, Vec2(0.0f,0.0f));
@@ -102,11 +102,9 @@ Entity Engine::CreateUISprite(string name, string pathToTexture, RectPivot pivot
     Entity entity = CreateScreenEntity(name, pivot, anchor, parent);
 
     _components.masks[entity] |= COMPONENT_SPRITE;
-    _components.sprites[entity].texture = new OpenglTexture2D(pathToTexture);
-    _components.sprites[entity].texture->Load();
-    _components.sprites[entity].texture->RendererAllocate();\
-    r32 w = _components.sprites[entity].texture->GetWidth();
-    r32 h = _components.sprites[entity].texture->GetHeight();
+    _components.sprites[entity].texture = GetTexture(pathToTexture);
+    u32 w = _components.sprites[entity].texture->GetWidth();
+    u32 h = _components.sprites[entity].texture->GetHeight();
     _components.sprites[entity].width = w;
     _components.sprites[entity].height = h;
     _components.sprites[entity].pivot = pivot;
@@ -130,21 +128,43 @@ Entity Engine::CreateUIText(string name, string text, r32 scale, RectPivot pivot
 
 Entity Engine::CreateSprite(string name, string pathToTexture, RectPivot pivot)
 {
-    Entity entity = CreateEntity(name);
+    Entity entity = _components.CreateEntity(name);
     _components.masks[entity] |= (COMPONENT_TRANSFORM);
     _transformSystem.SetLocalPosition(entity, Vec2(0.0f,0.0f));
     _transformSystem.SetRotation(entity, 0.0f);
     _transformSystem.SetScale(entity, Vec2(1.0f,1.0f));
 
     _components.masks[entity] |= COMPONENT_SPRITE;
-    _components.sprites[entity].texture = new OpenglTexture2D(pathToTexture);
-    _components.sprites[entity].texture->Load();
-    _components.sprites[entity].texture->RendererAllocate();\
-    r32 w = _components.sprites[entity].texture->GetWidth();
-    r32 h = _components.sprites[entity].texture->GetHeight();
+    _components.sprites[entity].texture = GetTexture(pathToTexture);
+    u32 w = _components.sprites[entity].texture->GetWidth();
+    u32 h = _components.sprites[entity].texture->GetHeight();
     _components.sprites[entity].width = w;
     _components.sprites[entity].height = h;
     _components.sprites[entity].pivot = pivot;
+
+    return entity;
+}
+
+Entity Engine::CreateAnimatedSprite(string name, string pathToTexture, u32 frames, r32 framesPerSecond, RectPivot pivot)
+{
+    Entity entity = _components.CreateEntity(name);
+    _components.masks[entity] |= (COMPONENT_TRANSFORM);
+    _transformSystem.SetLocalPosition(entity, Vec2(0.0f,0.0f));
+    _transformSystem.SetRotation(entity, 0.0f);
+    _transformSystem.SetScale(entity, Vec2(1.0f,1.0f));
+
+    _components.masks[entity] |= COMPONENT_SPRITE;
+    _components.sprites[entity].texture = GetTexture(pathToTexture);
+    u32 w = _components.sprites[entity].texture->GetWidth();
+    u32 h = _components.sprites[entity].texture->GetHeight();
+    _components.sprites[entity].width = w;
+    _components.sprites[entity].height = h;
+    _components.sprites[entity].pivot = pivot;
+
+    _components.masks[entity] |= COMPONENT_ANIMSPRITE;
+    _components.animsprites[entity].frameWidth = w / frames;
+    _components.animsprites[entity].framesPerSecond = framesPerSecond;
+    _components.animsprites[entity].timer = 0.0f;
 
     return entity;
 }

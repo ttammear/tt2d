@@ -221,7 +221,7 @@ void TransformSystem::SetRotation(u32 entity, r32 rotation)
 
 void TransformSystem::UpdateDirtyMatrices()
 {
-    for(u32 entity = 0; entity < MAX_ENTITIES; entity++)
+    for(u32 entity = 0; entity < _components->_entityPtr; entity++)
     {
         if((_components->masks[entity] & TRANSFORM_MASK) == TRANSFORM_MASK)
         {

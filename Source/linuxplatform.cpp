@@ -1,15 +1,22 @@
 #include "linuxplatform.h"
 
+#ifdef TT2D_PLATFORM_LINUX
+
 LinuxPlatform::LinuxPlatform()
 {
 
+}
+
+LinuxPlatform::~LinuxPlatform()
+{
+    // TODO: actually free resources (Dont really care at the moment)
 }
 
 bool LinuxPlatform::Init()
 {
     _display = XOpenDisplay(":0.0");
 
-    const rlim_t kStackSize = 16 * 1024 * 1024;   // min stack size = 16 MB
+    /*const rlim_t kStackSize = 16 * 1024 * 1024;   // min stack size = 16 MB
     struct rlimit rl;
     int result;
 
@@ -25,12 +32,38 @@ bool LinuxPlatform::Init()
                 fprintf(stderr, "setrlimit returned result = %d\n", result);
             }
         }
-    }
+    }*/
 
     return Platform::Init();
 }
 
-bool LinuxPlatform::CreateWindow(u32 width, u32 height, std::__cxx11::string title)
+void LinuxPlatform::DisableWindowResize()
+{
+    // TODO: need free?
+    XSizeHints *hints = XAllocSizeHints();
+    hints->flags = PMinSize	| PMaxSize;
+    hints->max_width = _width;
+    hints->min_width = _width;
+    hints->max_height = _height;
+    hints->min_height = _height;
+    XSetWMNormalHints(_display, _window, hints);
+    XFlush(_display);
+}
+
+void LinuxPlatform::ForceAspectRatio(u32 numerator, u32 denominator)
+{
+    // TODO: need free?
+    XSizeHints *hints = XAllocSizeHints();
+    hints->flags = PAspect;
+    hints->max_aspect.x = numerator;
+    hints->max_aspect.y = denominator;
+    hints->min_aspect.x = numerator;
+    hints->min_aspect.y = denominator;
+    XSetWMNormalHints(_display, _window, hints);
+    XFlush(_display);
+}
+
+bool LinuxPlatform::TTCreateNewWindow(u32 width, u32 height, std::__cxx11::string title)
 {
     if (!_display )
         printf( "Cannot open X display\n" );
@@ -94,20 +127,6 @@ bool LinuxPlatform::CreateWindow(u32 width, u32 height, std::__cxx11::string tit
     glClear     ( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     _window = win;
 
-    glXSwapIntervalEXT_t* glXSwapInterval = (glXSwapIntervalEXT_t*)glXGetProcAddress((const GLubyte*)"glXSwapIntervalEXT");
-    if(glXSwapInterval == 0)
-    {
-        printf("Enabling vsync failed!\n");
-    }
-    else
-    {
-        // enable vsync
-        GLXDrawable drawable = glXGetCurrentDrawable();
-        if (drawable) {
-            glXSwapInterval(_display, drawable, 1);
-        }
-    }
-
     _wmDeleteMessage = XInternAtom(_display, "WM_DELETE_WINDOW", False);
     XSetWMProtocols(_display, _window, &_wmDeleteMessage, True);
 
@@ -136,8 +155,28 @@ bool LinuxPlatform::CreateWindow(u32 width, u32 height, std::__cxx11::string tit
 
     // TODO: this doesnt belong here
     //_engine.Init(width, height);
+    _width = width;
+    _height = width;
 
-    return Platform::CreateWindow(width, height, title);
+    return Platform::TTCreateNewWindow(width, height, title);
+}
+
+bool LinuxPlatform::EnableVsync(bool enable)
+{
+    glXSwapIntervalEXT_t* glXSwapInterval = (glXSwapIntervalEXT_t*)glXGetProcAddress((const GLubyte*)"glXSwapIntervalEXT");
+    if(glXSwapInterval == 0)
+    {
+        return false;
+    }
+    else
+    {
+        // enable vsync
+        GLXDrawable drawable = glXGetCurrentDrawable();
+        if (drawable) {
+            glXSwapInterval(_display, drawable, enable ? 1 : 0);
+        }
+        return true;
+    }
 }
 
 bool LinuxPlatform::ProcessEvents()
@@ -181,7 +220,7 @@ bool LinuxPlatform::ProcessEvents()
                 XLookupString((XKeyEvent*)&event, buffer, bufsize, &key, &compose);
                 int keycode = charToKeycode(buffer[0]);
                 if(keycode != -1)
-                    _engine->_input._input.keyStates[keycode] = 1;;
+                    _engine->_input._input.keyStates[keycode] = 1;
             }
             break;
         case KeyRelease:
@@ -196,12 +235,13 @@ bool LinuxPlatform::ProcessEvents()
             {
                 XConfigureEvent xce = event.xconfigure;
                 // TODO: this event might not always be a resize event?
-                ///*width = */xce.width;
-                ///*height = */xce.height;
-                //reshape(eMem,xce.width,xce.height);
-                _engine->SetScreenSize(IVec2(xce.width, xce.height));
-                glViewport  ( 0,0,xce.width,xce.height);
-
+                u32 width = xce.height;
+                u32 height = xce.height;
+                // TODO: make proper aspect ratio forcing
+                _engine->SetScreenSize(IVec2(width, height));
+                glViewport(0, 0, width, height);
+                _width = width;
+                _height = height;
             }
             break;
         }
@@ -214,3 +254,5 @@ void LinuxPlatform::Swap()
 {
     glXSwapBuffers(_display, _window);
 }
+
+#endif

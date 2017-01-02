@@ -18,8 +18,8 @@ Renderer::~Renderer()
 
 void Renderer::Initialize()
 {
-    _uiPushBuffer = std::malloc(UI_PUSH_BUFFER_SIZE);
-    _pushBuffer = std::malloc(GAME_PUSH_BUFFER_SIZE);
+    _uiPushBuffer = std::malloc(INITIAL_UI_PUSH_BUFFER_SIZE);
+    _pushBuffer = std::malloc(INITIAL_GAME_PUSH_BUFFER_SIZE);
     assert(_uiPushBuffer != nullptr);
     assert(_pushBuffer != nullptr);
     _initialized = true;
@@ -27,58 +27,44 @@ void Renderer::Initialize()
     _gameMatrix = ortho(0.0f, (r32)_pixelSize.x, 0.0f, (r32)_pixelSize.y);
 }
 
-void Renderer::RenderUI()
-{
-
-}
-
-void Renderer::RenderGame()
-{
-
-}
-
-void Renderer::ClearScreen()
-{
-
-}
-
-void Renderer::Swap()
-{
-
-}
-
 void Renderer::PushRenderCommand(RenderCommandHeader* command, bool ui)
 {
     if(!ui)
     {
+        if(_pushBufferPointer + command->size >= _currentGameBufferSize)
+        {
+            _pushBuffer = realloc(_pushBuffer, _currentGameBufferSize * 2);
+            _currentGameBufferSize *= 2;
+            // TODO: std error
+            printf("WARNING: resizing game push buffer! Consider increasing initial size\n");
+        }
         std::memcpy((u8*)_pushBuffer+_pushBufferPointer, command, command->size);
         _pushBufferPointer += command->size;
-        assert(_pushBufferPointer < GAME_PUSH_BUFFER_SIZE);
     }
     else
     {
+        if(_uiPushBufferPointer + command->size >= _currentUIBufferSize)
+        {
+            _uiPushBuffer = realloc(_uiPushBuffer, _currentUIBufferSize * 2);
+            _currentUIBufferSize *= 2;
+            printf("WARNING: resizing UI push buffer! Consider increasing initial size\n");
+        }
         std::memcpy((u8*)_uiPushBuffer+_uiPushBufferPointer, command, command->size);
         _uiPushBufferPointer += command->size;
-        assert(_uiPushBufferPointer < UI_PUSH_BUFFER_SIZE);
     }
-}
-
-void Renderer::ResetPushBuffer()
-{
-    renderCommands.clear();
 }
 
 Vec2 Renderer::GetScreenSize()
 {
-    return Vec2(_pixelSize.x,_pixelSize.y);
+    return Vec2((r32)_pixelSize.x,(r32)_pixelSize.y);
 }
 
 #include "opengltexture2d.h"
-void Renderer::PushTexturedQuadRenderCommand(Vec2 topleft, Vec2 bottomright, Mat4 mat, u32 textureHandle, bool isUI)
+void Renderer::PushTexturedQuadRenderCommand(Rect rect, Rect texRect, Mat4 mat, u32 textureHandle, bool isUI)
 {
     TexturedQuadRenderCommand cmd;
-    cmd.topleft = topleft;
-    cmd.bottomright = bottomright;
+    cmd.rect = rect;
+    cmd.texRect = texRect;
     cmd.rendererHandle = textureHandle;
     cmd.size = sizeof(cmd);
     cmd.type = RenderCommandT_TexturedQuad;

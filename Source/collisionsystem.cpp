@@ -23,20 +23,30 @@ void CollisionSystem::SetCallback(u32 entity, CollisionCallback_t* callback, voi
     _components->colliders[entity].userData = userData;
 }
 
-void CollisionSystem::Update()
+void CollisionSystem::Update(u32 entities[], u32 entityCount)
 {
-    for(u32 entity = 0; entity < MAX_ENTITIES; entity++)
+    // TODO: pair culling
+    // quadtrees for example
+    struct Pair
     {
+        u16 first;
+        u16 second;
+    };
+
+    Pair pairs[(MAX_ENTITIES*MAX_ENTITIES)/4]; // TODO: can overflow
+    u32 pairCount = 0;
+
+    for(u32 i = 0; i < entityCount; i++)
+    {
+        u32 entity = entities[i];
         if((_components->masks[entity] & COLLISION_MASK) == COLLISION_MASK)
         {
-            for(u32 entity2 = entity+1; entity2 < MAX_ENTITIES; entity2++)
+            for(u32 j = i+1; j < entityCount; j++)
             {
+                u32 entity2 = entities[j];
                 if((_components->masks[entity2] & COLLISION_MASK) == COLLISION_MASK)
                 {
-                    SpriteComponent *sprite = &(_components->sprites[entity]);
                     TransformComponent * transform = &(_components->transforms[entity]);
-
-                    SpriteComponent *sprite2 = &(_components->sprites[entity2]);
                     TransformComponent * transform2 = &(_components->transforms[entity2]);
 
                     r32 x, y, w, h;
@@ -54,19 +64,32 @@ void CollisionSystem::Update()
                     if (x < x2 + w2 &&
                         x + w > x2 &&
                         y < y2 + h2 &&
-                        h + y > y2) {
-                         //printf("collision entity %d and %d\n", entity, entity2);
-                         if(_components->colliders[entity].collisionCallback != nullptr)
-                         {
-                            _components->colliders[entity].collisionCallback(entity, entity2, _components->colliders[entity].userData);
-                         }
-                         if(_components->colliders[entity2].collisionCallback != nullptr)
-                         {
-                            _components->colliders[entity2].collisionCallback(entity2, entity, _components->colliders[entity2].userData);
-                         }
+                        h + y > y2)
+                    {
+                        pairs[pairCount].first = entity;
+                        pairs[pairCount].second = entity2;
+                        pairCount++;
                     }
                 }
             }
+        }
+    }
+
+    for(i32 pairIndex = pairCount-1; pairIndex >= 0; pairIndex--)
+    {
+        u32 first = pairs[pairIndex].first;
+        u32 second = pairs[pairIndex].second;
+        if(_components->colliders[first].collisionCallback == nullptr)
+        {}
+        else
+        {
+           _components->colliders[first].collisionCallback(first, second, _components->colliders[first].userData);
+        }
+        if(_components->colliders[second].collisionCallback == nullptr)
+        {}
+        else
+        {
+           _components->colliders[second].collisionCallback(second, first, _components->colliders[second].userData);
         }
     }
 }

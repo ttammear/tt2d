@@ -4,6 +4,8 @@
 #include "shared.h"
 #include <math.h>
 
+#define PI 3.14159265359f
+
 struct Vec2
 {
     r32 x;
@@ -12,11 +14,13 @@ struct Vec2
     Vec2() = default;
     Vec2(r32 x, r32 y);
     r32 Magnitude();
+    void Normalize();
 
     static Vec2 Zero();
     Vec2 operator - (Vec2 const & in);
     Vec2 operator + (Vec2 const & in);
     Vec2 operator += (Vec2 const & in);
+    Vec2 operator -= (Vec2 const & in);
     Vec2 operator * (Vec2 const & in);
     Vec2 operator * (r32 const & in);
 };
@@ -28,6 +32,17 @@ struct IVec2
 
     IVec2() = default;
     IVec2(i32 x, i32 y);
+};
+
+struct Rect
+{
+    r32 x;
+    r32 y;
+    r32 width;
+    r32 height;
+
+    Rect() = default;
+    Rect(r32 x, r32 y, r32 width, r32 height);
 };
 
 typedef struct Mat4
@@ -59,5 +74,6 @@ Mat4 scale(Vec2 scale);
 Mat4 translate(Vec2 scale);
 Mat4 rotate(r32 rot);
 Mat4 ortho(r32 left, r32 right, r32 bottom, r32 top);
+r32 clamp01(r32 x);
 
 #endif // TTMATH_H

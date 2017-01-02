@@ -19,12 +19,13 @@ struct Character {
     GLuint     Advance;    // Offset to advance to next glyph
 };
 
+// TODO: de initialize?
 class TextRenderSystem
 {
 public:
     TextRenderSystem();
     void SetText(u32 entity, std::string text);
-    void Render();
+    void Render(u32 entities[], u32 numEntities);
     void Init(ComponentManager *components, Renderer *renderer);
 
 private:

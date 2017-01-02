@@ -5,6 +5,22 @@ OpenglRenderer::OpenglRenderer(u32 screenWidth, u32 screenHeight) : Renderer(scr
 
 }
 
+OpenglRenderer::~OpenglRenderer()
+{
+
+}
+
+Texture2D* OpenglRenderer::CreateTexture()
+{
+    Texture2D *ret = new OpenglTexture2D();
+    return ret;
+}
+
+void OpenglRenderer::Flush()
+{
+    glFlush();
+}
+
 inline void OpenglRenderer::ExecuteCommands(void* pushBuffer, u32 pointer)
 {
     u8* curCmd = (u8*)pushBuffer;
@@ -21,14 +37,14 @@ inline void OpenglRenderer::ExecuteCommands(void* pushBuffer, u32 pointer)
                 glLoadMatrixf((GLfloat*)&tqrc->mat);
                 glBindTexture(GL_TEXTURE_2D, tqrc->rendererHandle);
                 glBegin(GL_QUADS);
-                glTexCoord2f (0.0f,0.0f);
-                glVertex2d(tqrc->topleft.x, tqrc->topleft.y); // top left
-                glTexCoord2f (1.0f,0.0f);
-                glVertex2d(tqrc->bottomright.x, tqrc->topleft.y); // top right
-                glTexCoord2f (1.0f,1.0f);
-                glVertex2d(tqrc->bottomright.x, tqrc->bottomright.y); // bottom right
-                glTexCoord2f (0.0f,1.0f);
-                glVertex2d(tqrc->topleft.x, tqrc->bottomright.y); // bottom left
+                glTexCoord2f (tqrc->texRect.x, tqrc->texRect.y);
+                glVertex2d(tqrc->rect.x, tqrc->rect.y + tqrc->rect.height); // top left
+                glTexCoord2f (tqrc->texRect.x + tqrc->texRect.width, tqrc->texRect.y);
+                glVertex2d(tqrc->rect.x + tqrc->rect.width, tqrc->rect.y + tqrc->rect.height); // top right
+                glTexCoord2f (tqrc->texRect.x + tqrc->texRect.width, tqrc->texRect.y + tqrc->texRect.height);
+                glVertex2d(tqrc->rect.x + tqrc->rect.width, tqrc->rect.y); // bottom right
+                glTexCoord2f (tqrc->texRect.x, tqrc->texRect.y + tqrc->texRect.height);
+                glVertex2d(tqrc->rect.x, tqrc->rect.y); // bottom left
                 glEnd();
             }break;
             default:
@@ -55,9 +71,9 @@ void OpenglRenderer::RenderUI()
     _uiPushBufferPointer = 0;
 }
 
-void OpenglRenderer::ClearScreen()
+void OpenglRenderer::ClearScreen(r32 r, r32 g, r32 b)
 {
-    glClearColor(1.0f,0.0f,1.0f,1.0f);
+    glClearColor(r, g, b,1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 

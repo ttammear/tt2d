@@ -1,7 +1,7 @@
 #ifndef COMPONENTMANAGER_H
 #define COMPONENTMANAGER_H
 
-#define MAX_ENTITIES 100
+#define MAX_ENTITIES 60
 
 #include <array>
 #include <vector>
@@ -18,7 +18,8 @@ enum Component
     COMPONENT_TEXT          =       1 << 3,
     COMPONENT_PHYSICS       =       1 << 4,
     COMPONENT_COLLIDER      =       1 << 5,
-    COMPONENT_CUSTOM        =       6           // keep up to date pls
+    COMPONENT_ANIMSPRITE    =       1 << 6,
+    COMPONENT_CUSTOM        =       7           // keep up to date pls
 };
 
 using std::array;
@@ -29,48 +30,28 @@ class ComponentManager
 {
 public:
     ComponentManager();
-    ~ComponentManager();
 
     void AddTag(u32 entity, u32 tag);
+    void RemoveTag(u32 entity, u32 tag);
     bool HasTag(u32 entity, u32 tag);
     u32 CreateTag();
-
-    // TEMPLATE MADNESS
-    // the destructor of the components will not be called!
-    // but since the components are POD, we don't care!
-    template<class TYPE> u32 AddComponent()
-    {
-        if(std::is_pod<TYPE>::value)
-        {
-            auto array = new TYPE[MAX_ENTITIES];
-            _customComponents.insert(std::pair<std::type_index, void*>(typeid(TYPE), (void*) array));
-            return _tagIndex++;
-        }
-        else
-        {
-            // Components must be plain data!
-            assert(false);
-        }
-    }
-
-    template<class TYPE> TYPE* GetComponentArray()
-    {
-        auto ret = (TYPE*) _customComponents.at(typeid(TYPE));
-        return ret;
-    }
+    u32 CreateEntity(string name);
+    void DeleteEntity(u32 entity);
+    void SetActive(u32 entity, bool active);
 
 public:
     ComponentMask masks[MAX_ENTITIES];
     TransformComponent transforms[MAX_ENTITIES];
     RectTransformComponent recttransforms[MAX_ENTITIES];
     SpriteComponent sprites[MAX_ENTITIES];
+    AnimatedSpriteComponent animsprites[MAX_ENTITIES];
     TextComponent texts[MAX_ENTITIES];
-    NameComponent names[MAX_ENTITIES];
+    CoreComponent names[MAX_ENTITIES];
     PhysicsComponent physics[MAX_ENTITIES];
     ColliderComponent colliders[MAX_ENTITIES];
 
     u32 _tagIndex = COMPONENT_CUSTOM;
-    std::map<std::type_index, void*> _customComponents;
+    u32 _entityPtr = 0;
 };
 
 #endif // COMPONENTMANAGER_H

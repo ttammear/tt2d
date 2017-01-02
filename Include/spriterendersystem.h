@@ -12,7 +12,7 @@ class SpriteRenderSystem
 public:
     SpriteRenderSystem();
     SpriteRenderSystem(ComponentManager* components);
-    void Update();
+    void Update(u32 entities[], u32 numEntities, r32 dt);
     void Init(ComponentManager *components, Renderer *renderer);
 
 private:

@@ -1,10 +1,17 @@
 #include "opengltexture2d.h"
 
-OpenglTexture2D::OpenglTexture2D(string path) : Texture2D(path)
+OpenglTexture2D::OpenglTexture2D()
 {
 
 }
-//TODO : destructor?
+
+OpenglTexture2D::~OpenglTexture2D()
+{
+    if(_isGlAllocate)
+    {
+        glDeleteTextures(1, &_handle);
+    }
+}
 
 bool OpenglTexture2D::RendererAllocate()
 {

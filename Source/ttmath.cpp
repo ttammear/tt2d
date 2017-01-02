@@ -19,6 +19,14 @@ r32 Vec2::Magnitude()
     return sqrt(this->x*this->x+this->y*this->y);
 }
 
+void Vec2::Normalize()
+{
+    r32 mag = Magnitude();
+    this->x /= mag;
+    this->y /= mag;
+}
+
+
 Vec2 Vec2::operator - (Vec2 const & in)
 {
     Vec2 ret;
@@ -42,6 +50,13 @@ Vec2 Vec2::operator += (Vec2 const & in)
     return *this;
 }
 
+Vec2 Vec2::operator -= (Vec2 const & in)
+{
+    this->x -= in.x;
+    this->y -= in.y;
+    return *this;
+}
+
 Vec2 Vec2::operator * (Vec2 const & in)
 {
     Vec2 ret;
@@ -62,6 +77,14 @@ IVec2::IVec2(i32 x, i32 y)
 {
     this->x = x;
     this->y = y;
+}
+
+Rect::Rect(r32 x, r32 y, r32 width, r32 height)
+{
+    this->x = x;
+    this->y = y;
+    this->width = width;
+    this->height = height;
 }
 
 Mat4 Mat4::operator * (Mat4 const & in)
@@ -183,4 +206,13 @@ Mat4 rotate(r32 rot)
     ret.m[14] = 0.0f;
     ret.m[15] = 1.0f;
     return ret;
+}
+
+r32 clamp01(r32 v)
+{
+    if(v < 0.0f)
+        return 0.0f;
+    if(v > 1.0f)
+        return 1.0f;
+    return v;
 }

@@ -24,9 +24,13 @@ struct TransformComponent
     Mat4 modelMatrix;
 };
 
-struct NameComponent
+#define COREFLAG_ACTIVE         1
+#define COREFLAG_OCCUPIED       1<<2
+
+struct CoreComponent
 {
     string name;
+    u32 flags;
 };
 
 struct RectTransformComponent
@@ -45,6 +49,15 @@ struct SpriteComponent
     u32 height;
 };
 
+struct AnimatedSpriteComponent
+{
+    u32 frameWidth;
+    r32 framesPerSecond;
+    r32 timer = 0.0f;
+    // TODO: flags?
+    bool oneShot = true;
+};
+
 struct TextComponent
 {
     string text;
@@ -53,6 +66,7 @@ struct TextComponent
 struct PhysicsComponent
 {
     Vec2 velocity;
+    r32 drag = 0.0f;
     //r32 angularVelocity;
 };
 
